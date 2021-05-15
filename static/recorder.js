@@ -41,7 +41,7 @@ buttonStop.onclick = function() {
             // enable download link
             var downloadLink = document.getElementById("download");
             downloadLink.text = "PlayCapturedVideo";
-            downloadLink.href = "./static/video.mp4";
+            downloadLink.href = "/Users/jagrutimohanty/flask-sign-app-may15/static/video.mp4";
            
 
         }

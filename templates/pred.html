@@ -2,6 +2,25 @@
   
 <html>
 <body>
-<h1>{{ res }}</h1>
+<style>
+   table, th, td {
+                  border: 1px solid black;
+                }
+</style>
+<h1> Prediction of the sign language model</h1>
+
+  <table class="centered thick-border" style="width:50%">
+    <tr>
+            <th>Prediction Label </th>
+            <th>Prediction Probability</th>
+
+    </tr>
+    {% for k ,v in res.items() %}
+            <tr>
+                    <td>{{ k }}</td>
+                    <td>{{ v }}</td>
+            </tr>
+    {% endfor %}
+</table>
 </body>
 </html>
