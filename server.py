@@ -6,28 +6,24 @@ import os
 import json
 import time
 import sys
-#import urllib.request
 from multiprocessing.dummy import Pool
 from tensorflow.python.platform import flags
 import cv2 as cv2
 import numpy as np
 import math
 import re
-from tensorflow.python.compiler.mlcompute import mlcompute
-
-
+from tensorflow.python.platform import app
+import tensorflow_hub as hub
+from utils import convert_video_to_tensor
 
 app = Flask(__name__)
-
+ 
 video_camera = None
 global_frame = None
+model = None
+predict_func = None
+LABELS = ['beautiful', 'hello', 'please', 'sorry']
 
-
-###############
-
-
-
-#########################
 
 
 @app.route('/')
@@ -95,47 +91,32 @@ def preprocesspredict():
 
 
 def predfunc():
-    proba = [0.5,0.7,.09,.7,.1,.2,.3,.5]
-    ##loading the model from the saved file
-    # model = tf.keras.models.load_model('/Users/jagrutimohanty/flask-sign-app-may15/static/trained_models/2/')
-    # print(model.summary())
-  #  return proba
+    p = [0.5,0.7,.09,.7,.1,.2,.3,.5]
 
 @app.route('/predict', methods=['GET','POST'])
 def predict():
-  #  test_datagen = ImageDataGenerator(rescale = 1./255)
-    vals = ['beautiful', 'hello', 'please', 'sorry'] 
-  #  ['beautiful', 'hello', 'please', 'sorry'] # change this to the labels to predict
-    #test_dir = './static/video.mp4'
-    model = tf.keras.models.load_model('/Users/jagrutimohanty/flask-sign-app-may15/static/trained_models/2')
-    print(model.summary())
-    print("Jagruti")
-    proba = [0.5,0.7,.09,.7]
-    predfunc()
-    top_3 = np.argsort(proba)[:-4:-1]
-    print(top_3)
-    #probs_val = proba[top_3]
-    #prob_lab = vals[top_3]
-    probs_lab = []
-    probs_val = []
-    for i in range (len(top_3)):
-      probs_val.append(proba[top_3[i]])
-      probs_lab.append(vals[top_3[i]])
-    #lab = str(vals[top_3])
-    #outputdict = {'a': 1, 'b': 2, 'c': 3}
-    outputdict = dict(zip(probs_lab, probs_val))
-    print(outputdict)
-    #str(vals[np.argmax(pred)])
-    return render_template('pred.html', res = outputdict )  
+    global model
+    global predict_func
+    global LABELS
 
+    if not model or not predict_func:
+        model = tf.saved_model.load('./static/trained_models/2')
+        predict_func = model.signatures["serving_default"]
 
+    pred = predict_func(convert_video_to_tensor('./static/video.mp4'))['output_0']
+    layer = tf.keras.layers.Softmax()
+    p = layer(pred).numpy()
 
+    outputdict = {}
+    
+    for idx, label in enumerate(LABELS):
+        outputdict[label] = p[0][idx] 
 
+    label = LABELS[np.argmax(p[0])]
+
+    return render_template('pred.html', res=outputdict, label=label)  
 
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True)
-
-
-#refered link https://www.geeksforgeeks.org/deploying-a-tensorflow-2-1-cnn-model-on-the-web-with-flask/

@@ -11,7 +11,7 @@ class RecordingThread (threading.Thread):
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         fourcc = cv2.VideoWriter_fourcc('a', 'v', 'c', '1')
-        self.out = cv2.VideoWriter('/Users/jagrutimohanty/flask-sign-app-may15/static/video.mp4',fourcc,self.fps, (self.width , self.height))
+        self.out = cv2.VideoWriter('./static/video.mp4',fourcc,self.fps, (self.width , self.height))
 
     def run(self):
         while self.isRunning:
@@ -64,7 +64,7 @@ class VideoCamera(object):
                      self.height =int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                      self.fps = self.cap.get(cv2.CAP_PROP_FPS)
                      fourcc = cv2.VideoWriter_fourcc('a', 'v', 'c', '1')
-                     self.out = cv2.VideoWriter('/Users/jagrutimohanty/flask-sign-app-may15/static/video.mp4',fourcc, self.fps, (self.width , self.height))
+                     self.out = cv2.VideoWriter('./static/video.mp4',fourcc, self.fps, (self.width , self.height))
                 
                  ret, frame = self.cap.read()
                  if ret:
